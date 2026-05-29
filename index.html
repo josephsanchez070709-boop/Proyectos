@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard · Gestión de Proyectos por Región</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --teal:        #2EC4B6;
+    --teal-light:  #A8E6E1;
+    --teal-pale:   #E6F9F7;
+    --teal-dark:   #1A9E92;
+    --white:       #FFFFFF;
+    --off-white:   #F5FFFE;
+    --gray-1:      #F0F8F7;
+    --gray-2:      #D8EFED;
+    --gray-3:      #9FCFCB;
+    --text-dark:   #0D3B36;
+    --text-mid:    #2A6D65;
+    --text-soft:   #5B9E99;
+    --shadow-sm:   0 2px 8px rgba(46,196,182,0.10);
+    --shadow-md:   0 6px 24px rgba(46,196,182,0.14);
+    --shadow-lg:   0 12px 40px rgba(46,196,182,0.18);
+    --radius:      16px;
+    --radius-sm:   10px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--off-white);
+    color: var(--text-dark);
+    min-height: 100vh;
+  }
+
+  header {
+    background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 60%, #5FD8D0 100%);
+    padding: 28px 40px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(46,196,182,0.25);
+    position: relative;
+    overflow: hidden;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    right: -60px; top: -60px;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    right: 100px; bottom: -80px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .header-logo {
+    width: 46px; height: 46px;
+    background: rgba(255,255,255,0.18);
+    border-radius: 12px;
+    display: grid; place-items: center;
+    font-size: 22px;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255,255,255,0.25);
+  }
+  .header-title h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.55rem;
+    color: #fff;
+  }
+  .header-title p {
+    font-size: 0.80rem;
+    color: rgba(255,255,255,0.75);
+    margin-top: 3px;
+  }
+  .header-badge {
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.30);
+    border-radius: 50px;
+    padding: 7px 18px;
+    font-size: 0.78rem;
+    color: #fff;
+    font-weight: 500;
+    backdrop-filter: blur(4px);
+  }
+
+  main {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 32px 32px 48px;
+  }
+
+  .kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 28px;
+  }
+  .kpi-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-2);
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    transition: transform .22s, box-shadow .22s;
+  }
+  .kpi-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  .kpi-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: grid; place-items: center;
+    font-size: 22px;
+  }
+  .kpi-icon.green  { background: var(--teal-pale); }
+  .kpi-icon.teal   { background: #D4F5F2; }
+  .kpi-icon.amber  { background: #FFF4E6; }
+  .kpi-icon.blue   { background: #EAF4FF; }
+  .kpi-info { flex: 1; }
+  .kpi-num  { font-size: 2rem; font-weight: 700; color: var(--teal-dark); line-height: 1; }
+  .kpi-label{ font-size: 0.78rem; color: var(--text-soft); margin-top: 4px; }
+
+  /* TABS */
+  .tabs-container {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid var(--gray-2);
+    padding-bottom: 6px;
+  }
+  .tab-btn {
+    background: none;
+    border: none;
+    padding: 10px 28px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: 40px;
+    color: var(--text-mid);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab-btn.active {
+    background: var(--teal);
+    color: white;
+    box-shadow: var(--shadow-sm);
+  }
+  .tab-btn:hover:not(.active) {
+    background: var(--teal-pale);
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+  .search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 220px;
+  }
+  .search-wrap input {
+    width: 100%;
+    padding: 11px 18px 11px 42px;
+    border: 1.5px solid var(--gray-2);
+    border-radius: 50px;
+    background: var(--white);
+    font-size: 0.875rem;
+    outline: none;
+  }
+  .search-wrap input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(46,196,182,0.12); }
+  .search-icon {
+    position: absolute;
+    left: 15px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px; color: var(--text-soft);
+  }
+  .type-filter {
+    padding: 10px 20px;
+    border-radius: 50px;
+    border: 1.5px solid var(--gray-2);
+    background: var(--white);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--text-mid);
+    cursor: pointer;
+  }
+  .type-filter.active {
+    background: var(--teal);
+    border-color: var(--teal);
+    color: #fff;
+  }
+  .count-badge {
+    margin-left: auto;
+    font-size: 0.80rem;
+    color: var(--text-soft);
+  }
+  #count-num { font-weight: 700; color: var(--teal-dark); }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 20px;
+  }
+
+  .project-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1.5px solid var(--gray-2);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: transform .22s, box-shadow .22s;
+    cursor: pointer;
+  }
+  .project-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--teal-light);
+  }
+  .project-card.hidden { display: none; }
+
+  .card-header {
+    background: linear-gradient(110deg, var(--teal-pale), #D8F5F2);
+    padding: 18px 20px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    border-bottom: 1px solid var(--gray-2);
+  }
+  .card-num {
+    width: 34px; height: 34px;
+    background: var(--teal);
+    color: #fff;
+    border-radius: 10px;
+    display: grid; place-items: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+  .card-title {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--teal-dark);
+    line-height: 1.35;
+    flex: 1;
+  }
+  .region-badge {
+    display: inline-block;
+    background: rgba(46,196,182,0.2);
+    padding: 2px 8px;
+    border-radius: 30px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    margin-top: 5px;
+    color: var(--teal-dark);
+  }
+  .card-expand {
+    font-size: 18px;
+    color: var(--teal);
+    transition: transform .3s;
+  }
+  .project-card.expanded .card-expand { transform: rotate(180deg); }
+
+  .card-body {
+    padding: 0 20px;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height .35s ease, padding .35s;
+  }
+  .project-card.expanded .card-body {
+    max-height: 600px;
+    padding: 16px 20px 18px;
+  }
+
+  .alert-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .alert-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 11px 14px;
+    background: var(--gray-1);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--teal);
+    font-size: 0.825rem;
+    color: var(--text-mid);
+    line-height: 1.5;
+  }
+  .alert-dot {
+    width: 8px; height: 8px;
+    background: var(--teal);
+    border-radius: 50%;
+    margin-top: 6px;
+  }
+  .card-preview {
+    padding: 14px 20px 16px;
+    font-size: 0.80rem;
+    color: var(--text-soft);
+    border-top: 1px dashed var(--gray-2);
+  }
+  .project-card.expanded .card-preview { display: none; }
+
+  .bottom-bar {
+    margin-top: 36px;
+    background: var(--white);
+    border-radius: var(--radius);
+    border: 1px solid var(--gray-2);
+    padding: 18px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    color: var(--text-soft);
+  }
+  .bottom-bar strong { color: var(--teal-dark); }
+
+  @media (max-width: 900px) {
+    .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+    main { padding: 20px 16px 40px; }
+    header { padding: 20px; }
+  }
+  @media (max-width: 500px) {
+    .cards-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="header-logo">📊</div>
+    <div class="header-title">
+      <h1>Gestión de Proyectos</h1>
+      <p>Alertas por región · Enlaza / GEB</p>
+    </div>
+  </div>
+  <div class="header-badge" id="date-badge"></div>
+</header>
+
+<main>
+  <div class="kpi-strip">
+    <div class="kpi-card"><div class="kpi-icon green">📌</div><div class="kpi-info"><div class="kpi-num" id="kpi-total">0</div><div class="kpi-label">Proyectos</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon teal">⚠️</div><div class="kpi-info"><div class="kpi-num" id="kpi-alerts">0</div><div class="kpi-label">Alertas totales</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon amber">🚨</div><div class="kpi-info"><div class="kpi-num" id="kpi-risk">0</div><div class="kpi-label">Con riesgos</div></div></div>
+    <div class="kpi-card"><div class="kpi-icon blue">⏳</div><div class="kpi-info"><div class="kpi-num" id="kpi-pending">0</div><div class="kpi-label">Pendientes</div></div></div>
+  </div>
+
+  <!-- Pestañas de región -->
+  <div class="tabs-container">
+    <button class="tab-btn active" data-region="all">🌎 Todas</button>
+    <button class="tab-btn" data-region="Sur/Norte">📍 Sur / Norte</button>
+    <button class="tab-btn" data-region="Centro">🏙️ Centro</button>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="Buscar por nombre o alerta...">
+    </div>
+    <select id="type-filter" class="type-filter">
+      <option value="all">📋 Todos los tipos</option>
+      <option value="riesgo">⚠️ Riesgo</option>
+      <option value="pendiente">⏰ Pendiente</option>
+      <option value="seguimiento">🔄 Seguimiento</option>
+    </select>
+    <span class="count-badge">Mostrando <span id="count-num">0</span> proyectos</span>
+  </div>
+
+  <div class="cards-grid" id="cards-container"></div>
+  <div class="bottom-bar"><span><strong>Actualización:</strong> Mayo 2026</span><span>Fuente: Estado de los Proyectos 28/05</span><span>Sistema: Enlaza GEB</span></div>
+</main>
+
+<script>
+// ===================== DATOS ACTUALIZADOS DESDE EXCEL =====================
+const proyectos = [
+  // REGIÓN SUR / NORTE
+  { nombre: "Huila", region: "Sur/Norte", alertas: ["En elaboración ICA 1", "Relacionamiento con Personero de Neiva – atención a compensación social al Sr. Fabio Ricaurte", "Imposibilidad de firmar contrato de conexión con Electrohuila", "Electrohuila solicita incluir obras del módulo común del STR en contrato de conexión"], tipo: ["pendiente", "seguimiento"] },
+  { nombre: "Refuerzo Sur Occidental Tramo 2", region: "Sur/Norte", alertas: ["Predios liberados: 444/456 (97%) – Torres: 433/435 (99%)", "Solicitud de consultas previas adicionales – Reunión con Minga Cali", "Situación de orden público: hurto de camioneta en Tuluá", "Extorsión a contratista PAHT Construcciones – Suspensión por riesgo sociopolítico", "Incumplimiento ejecución por riesgo de orden público", "Mayores tiempos de ejecución, riesgo de incumplimiento contractual"], tipo: ["riesgo", "pendiente", "seguimiento"] },
+  { nombre: "Línea Cuestecitas - Colectora 500 kV", region: "Sur/Norte", alertas: ["91 sitios de torre por liberar", "Disponibilidad efectiva de 405 sitios de torre", "37 comunidades en complejidad social (13 activas)", "Falta protocolizar 12 comunidades", "54 peticiones y 1 tutela", "Grupo 12: 57 sitios de torre pendientes", "No ingresaron concretos premezclados por paro comunitario"], tipo: ["pendiente", "riesgo"] },
+  { nombre: "UPME Cuestecitas – La Loma 500 kV", region: "Sur/Norte", alertas: ["ANLA debe resolver recurso de reposición contra Res. 837", "116 sitios de torre por liberar", "Problemática con comunidades: Iranchería, Gran Chaparral, Valle Encantado", "Avance general: 80.38%", "12 peticiones sin tutelas", "Pendiente consejo comunitario Smituh (torres 101-104)"], tipo: ["pendiente", "seguimiento"] },
+  { nombre: "Parque Fotovoltaico Ariguaní 200 MWac", region: "Sur/Norte", alertas: ["ANLA puede declarar archivo del trámite por falta de respuesta oportuna", "Complementar argumentación – diferencia con proyecto UPME-01-2014"], tipo: ["riesgo", "pendiente"] },
+  // REGIÓN CENTRO
+  { nombre: "Norte - Chivor", region: "Centro", alertas: ["Pendiente acción judicial (libro blanco)", "Acciones judiciales por terceros (Gustavo Leal, otros)", "30/04/26: Tutela instaurada por Gustavo Leal", "Eventuales acciones judiciales contra actos de modificación", "Demoras MADS en sustracción temporal (Res. 620 de 2018)", "Solicitud de prórroga para sustracción temporal (07/04/26)"], tipo: ["riesgo", "pendiente"] },
+  { nombre: "Sogamoso", region: "Centro", alertas: ["Recurso de reposición contra Res. 0939 del 27/03/26 – demoras ANLA (13/06/26)", "Recurso de reposición contra Res. 462 del 16/02/26 – demoras ANLA (04/05/26)", "Elaboración complemento EIA – radicación estimada 30/08/26", "Múltiples modificaciones en evaluación"], tipo: ["pendiente", "seguimiento"] }
+];
+
+// Configuración inicial
+document.getElementById('kpi-total').textContent = proyectos.length;
+const totalAlertas = proyectos.reduce((s, p) => s + p.alertas.length, 0);
+document.getElementById('kpi-alerts').textContent = totalAlertas;
+const conRiesgo = proyectos.filter(p => p.tipo.includes('riesgo')).length;
+document.getElementById('kpi-risk').textContent = conRiesgo;
+const conPendiente = proyectos.filter(p => p.tipo.includes('pendiente')).length;
+document.getElementById('kpi-pending').textContent = conPendiente;
+
+// Fecha actual
+const ahora = new Date();
+document.getElementById('date-badge').textContent = ahora.toLocaleDateString('es-CO', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+
+let currentRegion = 'all';
+let currentType = 'all';
+let searchQuery = '';
+
+// Renderizado de tarjetas
+function renderCards() {
+  const container = document.getElementById('cards-container');
+  container.innerHTML = '';
+  let filtered = proyectos.filter(p => {
+    if (currentRegion !== 'all' && p.region !== currentRegion) return false;
+    if (currentType !== 'all' && !p.tipo.includes(currentType)) return false;
+    if (searchQuery && !(p.nombre.toLowerCase().includes(searchQuery) || p.alertas.some(a => a.toLowerCase().includes(searchQuery)))) return false;
+    return true;
+  });
+  filtered.forEach((p, idx) => {
+    const preview = p.alertas[0].substring(0, 80) + (p.alertas[0].length > 80 ? '…' : '');
+    const tipoTexto = p.tipo.includes('riesgo') ? '⚠️ Riesgo' : (p.tipo.includes('pendiente') ? '⏰ Pendiente' : '🔄 Seguimiento');
+    const card = document.createElement('div');
+    card.className = 'project-card';
+    card.dataset.region = p.region;
+    card.dataset.tipo = p.tipo.join(' ');
+    card.innerHTML = `
+      <div class="card-header">
+        <div class="card-num">${idx+1}</div>
+        <div style="flex:1">
+          <div class="card-title">${p.nombre}</div>
+          <div class="region-badge">${p.region}</div>
+          <div style="font-size:.7rem; color:var(--text-soft); margin-top:4px">${tipoTexto} · ${p.alertas.length} alerta(s)</div>
+        </div>
+        <div class="card-expand">⌄</div>
+      </div>
+      <div class="card-preview">${preview}</div>
+      <div class="card-body"><ul class="alert-list">${p.alertas.map(a => `<li class="alert-item"><div class="alert-dot"></div><span>${a}</span></li>`).join('')}</ul></div>
+    `;
+    card.addEventListener('click', () => card.classList.toggle('expanded'));
+    container.appendChild(card);
+  });
+  document.getElementById('count-num').textContent = filtered.length;
+}
+
+// Eventos de pestañas
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentRegion = btn.dataset.region;
+    renderCards();
+  });
+});
+
+// Filtro de tipo
+document.getElementById('type-filter').addEventListener('change', (e) => {
+  currentType = e.target.value;
+  renderCards();
+});
+
+// Búsqueda
+document.getElementById('search-input').addEventListener('input', (e) => {
+  searchQuery = e.target.value.toLowerCase().trim();
+  renderCards();
+});
+
+renderCards();
+</script>
+</body>
+</html>
