@@ -1,476 +1,555 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard · Gestión de Proyectos por Región</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --teal:        #2EC4B6;
-    --teal-light:  #A8E6E1;
-    --teal-pale:   #E6F9F7;
-    --teal-dark:   #1A9E92;
-    --white:       #FFFFFF;
-    --off-white:   #F5FFFE;
-    --gray-1:      #F0F8F7;
-    --gray-2:      #D8EFED;
-    --gray-3:      #9FCFCB;
-    --text-dark:   #0D3B36;
-    --text-mid:    #2A6D65;
-    --text-soft:   #5B9E99;
-    --shadow-sm:   0 2px 8px rgba(46,196,182,0.10);
-    --shadow-md:   0 6px 24px rgba(46,196,182,0.14);
-    --shadow-lg:   0 12px 40px rgba(46,196,182,0.18);
-    --radius:      16px;
-    --radius-sm:   10px;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Panel Ejecutivo de Proyectos | Datos oficiales</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: #eef2f5;
+            font-family: 'Inter', sans-serif;
+            padding: 30px 24px;
+            color: #1a2e3b;
+        }
 
-  body {
-    font-family: 'Outfit', sans-serif;
-    background: var(--off-white);
-    color: var(--text-dark);
-    min-height: 100vh;
-  }
+        .dashboard {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
 
-  header {
-    background: linear-gradient(135deg, var(--teal-dark) 0%, var(--teal) 60%, #5FD8D0 100%);
-    padding: 28px 40px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 4px 20px rgba(46,196,182,0.25);
-    position: relative;
-    overflow: hidden;
-  }
-  header::after {
-    content: '';
-    position: absolute;
-    right: -60px; top: -60px;
-    width: 220px; height: 220px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.07);
-  }
-  header::before {
-    content: '';
-    position: absolute;
-    right: 100px; bottom: -80px;
-    width: 160px; height: 160px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.05);
-  }
-  .header-left { display: flex; align-items: center; gap: 16px; }
-  .header-logo {
-    width: 46px; height: 46px;
-    background: rgba(255,255,255,0.18);
-    border-radius: 12px;
-    display: grid; place-items: center;
-    font-size: 22px;
-    backdrop-filter: blur(4px);
-    border: 1px solid rgba(255,255,255,0.25);
-  }
-  .header-title h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.55rem;
-    color: #fff;
-  }
-  .header-title p {
-    font-size: 0.80rem;
-    color: rgba(255,255,255,0.75);
-    margin-top: 3px;
-  }
-  .header-badge {
-    background: rgba(255,255,255,0.18);
-    border: 1px solid rgba(255,255,255,0.30);
-    border-radius: 50px;
-    padding: 7px 18px;
-    font-size: 0.78rem;
-    color: #fff;
-    font-weight: 500;
-    backdrop-filter: blur(4px);
-  }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+        .title h1 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #1a5f56;
+        }
+        .title p {
+            font-size: 0.8rem;
+            color: #5f7f8c;
+        }
+        .date {
+            background: white;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #d4e0e6;
+        }
 
-  main {
-    max-width: 1300px;
-    margin: 0 auto;
-    padding: 32px 32px 48px;
-  }
+        .project-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 30px;
+            background: white;
+            padding: 6px 12px;
+            border-radius: 60px;
+            width: fit-content;
+            border: 1px solid #dee8ed;
+        }
+        .tab-btn {
+            padding: 8px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #2d596b;
+        }
+        .tab-btn.active {
+            background: #1e6f5c;
+            color: white;
+            box-shadow: 0 2px 8px rgba(30,111,92,0.2);
+        }
 
-  .kpi-strip {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 18px;
-    margin-bottom: 28px;
-  }
-  .kpi-card {
-    background: var(--white);
-    border-radius: var(--radius);
-    padding: 22px 24px;
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--gray-2);
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    transition: transform .22s, box-shadow .22s;
-  }
-  .kpi-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
-  .kpi-icon {
-    width: 52px; height: 52px;
-    border-radius: 14px;
-    display: grid; place-items: center;
-    font-size: 22px;
-  }
-  .kpi-icon.green  { background: var(--teal-pale); }
-  .kpi-icon.teal   { background: #D4F5F2; }
-  .kpi-icon.amber  { background: #FFF4E6; }
-  .kpi-icon.blue   { background: #EAF4FF; }
-  .kpi-info { flex: 1; }
-  .kpi-num  { font-size: 2rem; font-weight: 700; color: var(--teal-dark); line-height: 1; }
-  .kpi-label{ font-size: 0.78rem; color: var(--text-soft); margin-top: 4px; }
+        .indicators-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
 
-  /* TABS */
-  .tabs-container {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 24px;
-    border-bottom: 2px solid var(--gray-2);
-    padding-bottom: 6px;
-  }
-  .tab-btn {
-    background: none;
-    border: none;
-    padding: 10px 28px;
-    font-family: 'Outfit', sans-serif;
-    font-weight: 600;
-    font-size: 0.9rem;
-    border-radius: 40px;
-    color: var(--text-mid);
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .tab-btn.active {
-    background: var(--teal);
-    color: white;
-    box-shadow: var(--shadow-sm);
-  }
-  .tab-btn:hover:not(.active) {
-    background: var(--teal-pale);
-  }
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 18px 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e0eef2;
+            transition: all 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 20px rgba(0,0,0,0.05);
+        }
 
-  .toolbar {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 22px;
-    flex-wrap: wrap;
-  }
-  .search-wrap {
-    position: relative;
-    flex: 1;
-    min-width: 220px;
-  }
-  .search-wrap input {
-    width: 100%;
-    padding: 11px 18px 11px 42px;
-    border: 1.5px solid var(--gray-2);
-    border-radius: 50px;
-    background: var(--white);
-    font-size: 0.875rem;
-    outline: none;
-  }
-  .search-wrap input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(46,196,182,0.12); }
-  .search-icon {
-    position: absolute;
-    left: 15px; top: 50%;
-    transform: translateY(-50%);
-    font-size: 16px; color: var(--text-soft);
-  }
-  .type-filter {
-    padding: 10px 20px;
-    border-radius: 50px;
-    border: 1.5px solid var(--gray-2);
-    background: var(--white);
-    font-family: 'Outfit', sans-serif;
-    font-size: 0.82rem;
-    font-weight: 500;
-    color: var(--text-mid);
-    cursor: pointer;
-  }
-  .type-filter.active {
-    background: var(--teal);
-    border-color: var(--teal);
-    color: #fff;
-  }
-  .count-badge {
-    margin-left: auto;
-    font-size: 0.80rem;
-    color: var(--text-soft);
-  }
-  #count-num { font-weight: 700; color: var(--teal-dark); }
+        .card-header {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #6e8f9e;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
-  .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-    gap: 20px;
-  }
+        .pair-values {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .pair-values .current {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1e6f5c;
+        }
+        .pair-values .total {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #9bb7c4;
+        }
+        .percentage {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1e6f5c;
+            margin-bottom: 6px;
+        }
+        .progress-bar {
+            background: #e2edf2;
+            border-radius: 12px;
+            height: 8px;
+            overflow: hidden;
+            margin: 12px 0 4px;
+        }
+        .progress-fill {
+            background: #289672;
+            height: 100%;
+            width: 0%;
+            border-radius: 12px;
+        }
 
-  .project-card {
-    background: var(--white);
-    border-radius: var(--radius);
-    border: 1.5px solid var(--gray-2);
-    box-shadow: var(--shadow-sm);
-    overflow: hidden;
-    transition: transform .22s, box-shadow .22s;
-    cursor: pointer;
-  }
-  .project-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-    border-color: var(--teal-light);
-  }
-  .project-card.hidden { display: none; }
+        .small-text {
+            font-size: 0.7rem;
+            color: #7b9aaa;
+        }
 
-  .card-header {
-    background: linear-gradient(110deg, var(--teal-pale), #D8F5F2);
-    padding: 18px 20px 14px;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    border-bottom: 1px solid var(--gray-2);
-  }
-  .card-num {
-    width: 34px; height: 34px;
-    background: var(--teal);
-    color: #fff;
-    border-radius: 10px;
-    display: grid; place-items: center;
-    font-size: 0.78rem;
-    font-weight: 700;
-  }
-  .card-title {
-    font-size: 0.92rem;
-    font-weight: 600;
-    color: var(--teal-dark);
-    line-height: 1.35;
-    flex: 1;
-  }
-  .region-badge {
-    display: inline-block;
-    background: rgba(46,196,182,0.2);
-    padding: 2px 8px;
-    border-radius: 30px;
-    font-size: 0.65rem;
-    font-weight: 600;
-    margin-top: 5px;
-    color: var(--teal-dark);
-  }
-  .card-expand {
-    font-size: 18px;
-    color: var(--teal);
-    transition: transform .3s;
-  }
-  .project-card.expanded .card-expand { transform: rotate(180deg); }
+        .performance-block {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #e0eef2;
+            padding: 18px 24px;
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+        .perf-item {
+            flex: 1;
+            min-width: 120px;
+        }
+        .perf-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #6e8f9e;
+        }
+        .perf-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #1e6f5c;
+        }
+        .license-block {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 12px 20px;
+            margin-bottom: 24px;
+            border-left: 5px solid #289672;
+            font-size: 0.8rem;
+        }
+        .risk-block {
+            background: #fff8eb;
+            border-radius: 20px;
+            padding: 12px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .dates {
+            display: flex;
+            gap: 20px;
+            font-weight: 600;
+        }
 
-  .card-body {
-    padding: 0 20px;
-    overflow: hidden;
-    max-height: 0;
-    transition: max-height .35s ease, padding .35s;
-  }
-  .project-card.expanded .card-body {
-    max-height: 600px;
-    padding: 16px 20px 18px;
-  }
+        .info-sections {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 11px;
+            margin-bottom: 21px;
+        }
+        .info-card {
+            background: white;
+            border-radius: 24px;
+            padding: 18px 20px;
+            border: 1px solid #e0eef2;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .info-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-left: 3px solid #1e6f5c;
+            padding-left: 12px;
+            color: #1a5f56;
+        }
+        .info-list {
+            list-style: none;
+        }
+        .info-list li {
+            font-size: 0.8rem;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            color: #2c4b5f;
+        }
+        .info-list li i {
+            color: #289672;
+            font-size: 0.7rem;
+            margin-top: 4px;
+        }
 
-  .alert-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-  .alert-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 11px 14px;
-    background: var(--gray-1);
-    border-radius: var(--radius-sm);
-    border-left: 3px solid var(--teal);
-    font-size: 0.825rem;
-    color: var(--text-mid);
-    line-height: 1.5;
-  }
-  .alert-dot {
-    width: 8px; height: 8px;
-    background: var(--teal);
-    border-radius: 50%;
-    margin-top: 6px;
-  }
-  .card-preview {
-    padding: 14px 20px 16px;
-    font-size: 0.80rem;
-    color: var(--text-soft);
-    border-top: 1px dashed var(--gray-2);
-  }
-  .project-card.expanded .card-preview { display: none; }
-
-  .bottom-bar {
-    margin-top: 36px;
-    background: var(--white);
-    border-radius: var(--radius);
-    border: 1px solid var(--gray-2);
-    padding: 18px 28px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 0.82rem;
-    color: var(--text-soft);
-  }
-  .bottom-bar strong { color: var(--teal-dark); }
-
-  @media (max-width: 900px) {
-    .kpi-strip { grid-template-columns: repeat(2, 1fr); }
-    main { padding: 20px 16px 40px; }
-    header { padding: 20px; }
-  }
-  @media (max-width: 500px) {
-    .cards-grid { grid-template-columns: 1fr; }
-  }
-</style>
+        @media (max-width: 900px) {
+            .info-sections {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 700px) {
+            body { padding: 16px; }
+            .indicators-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
 </head>
 <body>
-
-<header>
-  <div class="header-left">
-    <div class="header-logo">📊</div>
-    <div class="header-title">
-      <h1>Gestión de Proyectos</h1>
-      <p>Alertas por región · Enlaza / GEB</p>
+<div class="dashboard">
+    <div class="header">
+        <div class="title">
+            <h1>📊 Panel Proyectos</h1>
+            <p></p>
+        </div>
+        <div class="date" id="fechaDisplay"></div>
     </div>
-  </div>
-  <div class="header-badge" id="date-badge"></div>
-</header>
 
-<main>
-  <div class="kpi-strip">
-    <div class="kpi-card"><div class="kpi-icon green">📌</div><div class="kpi-info"><div class="kpi-num" id="kpi-total">0</div><div class="kpi-label">Proyectos</div></div></div>
-    <div class="kpi-card"><div class="kpi-icon teal">⚠️</div><div class="kpi-info"><div class="kpi-num" id="kpi-alerts">0</div><div class="kpi-label">Alertas totales</div></div></div>
-    <div class="kpi-card"><div class="kpi-icon amber">🚨</div><div class="kpi-info"><div class="kpi-num" id="kpi-risk">0</div><div class="kpi-label">Con riesgos</div></div></div>
-    <div class="kpi-card"><div class="kpi-icon blue">⏳</div><div class="kpi-info"><div class="kpi-num" id="kpi-pending">0</div><div class="kpi-label">Pendientes</div></div></div>
-  </div>
-
-  <!-- Pestañas de región -->
-  <div class="tabs-container">
-    <button class="tab-btn active" data-region="all">🌎 Todas</button>
-    <button class="tab-btn" data-region="Sur/Norte">📍 Sur / Norte</button>
-    <button class="tab-btn" data-region="Centro">🏙️ Centro</button>
-  </div>
-
-  <div class="toolbar">
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="search-input" placeholder="Buscar por nombre o alerta...">
-    </div>
-    <select id="type-filter" class="type-filter">
-      <option value="all">📋 Todos los tipos</option>
-      <option value="riesgo">⚠️ Riesgo</option>
-      <option value="pendiente">⏰ Pendiente</option>
-      <option value="seguimiento">🔄 Seguimiento</option>
-    </select>
-    <span class="count-badge">Mostrando <span id="count-num">0</span> proyectos</span>
-  </div>
-
-  <div class="cards-grid" id="cards-container"></div>
-  <div class="bottom-bar"><span><strong>Actualización:</strong> Mayo 2026</span><span>Fuente: Estado de los Proyectos 28/05</span><span>Sistema: Enlaza GEB</span></div>
-</main>
+    <div class="project-tabs" id="projectTabs"></div>
+    <div id="dynamicContent"></div>
+</div>
 
 <script>
-// ===================== DATOS ACTUALIZADOS DESDE EXCEL =====================
-const proyectos = [
-  // REGIÓN SUR / NORTE
-  { nombre: "Huila", region: "Sur/Norte", alertas: ["En elaboración ICA 1", "Relacionamiento con Personero de Neiva – atención a compensación social al Sr. Fabio Ricaurte", "Imposibilidad de firmar contrato de conexión con Electrohuila", "Electrohuila solicita incluir obras del módulo común del STR en contrato de conexión"], tipo: ["pendiente", "seguimiento"] },
-  { nombre: "Refuerzo Sur Occidental Tramo 2", region: "Sur/Norte", alertas: ["Predios liberados: 444/456 (97%) – Torres: 433/435 (99%)", "Solicitud de consultas previas adicionales – Reunión con Minga Cali", "Situación de orden público: hurto de camioneta en Tuluá", "Extorsión a contratista PAHT Construcciones – Suspensión por riesgo sociopolítico", "Incumplimiento ejecución por riesgo de orden público", "Mayores tiempos de ejecución, riesgo de incumplimiento contractual"], tipo: ["riesgo", "pendiente", "seguimiento"] },
-  { nombre: "Línea Cuestecitas - Colectora 500 kV", region: "Sur/Norte", alertas: ["91 sitios de torre por liberar", "Disponibilidad efectiva de 405 sitios de torre", "37 comunidades en complejidad social (13 activas)", "Falta protocolizar 12 comunidades", "54 peticiones y 1 tutela", "Grupo 12: 57 sitios de torre pendientes", "No ingresaron concretos premezclados por paro comunitario"], tipo: ["pendiente", "riesgo"] },
-  { nombre: "UPME Cuestecitas – La Loma 500 kV", region: "Sur/Norte", alertas: ["ANLA debe resolver recurso de reposición contra Res. 837", "116 sitios de torre por liberar", "Problemática con comunidades: Iranchería, Gran Chaparral, Valle Encantado", "Avance general: 80.38%", "12 peticiones sin tutelas", "Pendiente consejo comunitario Smituh (torres 101-104)"], tipo: ["pendiente", "seguimiento"] },
-  { nombre: "Parque Fotovoltaico Ariguaní 200 MWac", region: "Sur/Norte", alertas: ["ANLA puede declarar archivo del trámite por falta de respuesta oportuna", "Complementar argumentación – diferencia con proyecto UPME-01-2014"], tipo: ["riesgo", "pendiente"] },
-  // REGIÓN CENTRO
-  { nombre: "Norte - Chivor", region: "Centro", alertas: ["Pendiente acción judicial (libro blanco)", "Acciones judiciales por terceros (Gustavo Leal, otros)", "30/04/26: Tutela instaurada por Gustavo Leal", "Eventuales acciones judiciales contra actos de modificación", "Demoras MADS en sustracción temporal (Res. 620 de 2018)", "Solicitud de prórroga para sustracción temporal (07/04/26)"], tipo: ["riesgo", "pendiente"] },
-  { nombre: "Sogamoso", region: "Centro", alertas: ["Recurso de reposición contra Res. 0939 del 27/03/26 – demoras ANLA (13/06/26)", "Recurso de reposición contra Res. 462 del 16/02/26 – demoras ANLA (04/05/26)", "Elaboración complemento EIA – radicación estimada 30/08/26", "Múltiples modificaciones en evaluación"], tipo: ["pendiente", "seguimiento"] }
-];
+    // ======================== DATOS EXTRAÍDOS LITERALMENTE DEL POWERPOINT ========================
+    const proyectos = {
+        Colectora: {
+            nombre: "Proyecto Colectora",
+            liberacionPredial: { actual: 444, total: 446, porcentaje: 99 },
+            cimentaciones: { actual: 911, total: 1027, porcentaje: 89 },
+            torres: { actual: 892, total: 1027, porcentaje: 87 },
+            kmTendido: { actual: 260, total: 477, porcentaje: 55 },
+            spi: 0.95,
+            cpi: 1.16,
+            
+            fopo: "22 / Abr / 26",
+            fepo: "Mar / 27",
+            riesgo: "Riesgo Compensación muy bajo (MUSD)",
+            extra: "",
+            hechos: [
+                "00 Accidentes LTI y 0 accidentes registrables El 27/abr se radicó al MME nueva solicitud Modificación FPO segundo circuito Nva FOPO 22/sep/2026",
+                
+            ],
+            hitos: [
+                "SE LOMA: Energización prevista con las líneas  La Loma – Cuestecitas I y II en Jun – Jul 2026"
+            ],
+            puntosAtencion: [
+                "Se mantiene alerta por llegada de solicitudes de procedencia y solicitudes de registro de nuevas comunidades o reconocimiento de ancestralidad en algunas zonas",
+                "Se realizaron las  visitas de verificación en 2 de las 4 comunidades previstas por DANCP Potrerito y Karralupalen , pendientes Tulapan  que no se realizó por temas de seguridad en la zona y Cholosirra por conflicto interno de representatividad. Programadas para Mayo 2026"
+            ],
+            social: [
+                "245 comunidades certificadas a mar/26 en tramo colectora-cuestecitas",
+                "Finalizaron 370 de 393 proyectos de compensaciones equivalente al 94% de avance",
+                "Se han cerrado 80 proyectos de inversión voluntaria entre los dos tramos.",
+                " En el marco de las nuevas consultas previas, el 09/abr se interpuso recurso de reposición ante DANCP con respecto a la comunidad Joutaliwasou"
+            ]
+        },
+        Norte: {
+            nombre: "Proyecto Norte",
+            liberacionPredial: { actual: 1.055, total: 1.135, porcentaje: 93 },
+            cimentaciones: { actual: 266, total: 365, porcentaje: 73 },
+            torres: { actual: 263, total: 365, porcentaje: 72 },
+            kmTendido: { actual: 47, total: 164, porcentaje: 29 },
+            spi: 0.79,
+            cpi: 0.50,
+            
+            fopo: "31 / May / 26",
+            fepo: "Jun / 27",
+            riesgo: "Riesgo 0 MUSD",
+            extra: "",
+            hechos: [
+                "MLA3: 27/mar mediante resolución 0954 ANLA resuelve el recurso de reposición interpuesto contra la resolución 034 del 07/ene.  21/abr se envía a ENLAZA constancia de ejecutoria.",
+                "MLA2: 19/abr culminan reuniones informativas, audiencias públicas 16/may (Cogua) y 17/may (Tabio)",
+                
+            ],
+            hitos: [
+                "Seguimiento a la solicitud de prórroga"
+            ],
+            puntosAtencion: [
+                ""
+            ],
+            social: [
+                "",
+               
+            ]
+        },
+        Sogamoso: {
+            nombre: "Sogamoso",
+            liberacionPredial: { actual: 1.854, total: 2.151, porcentaje: 86 },
+            cimentaciones: { actual: 540, total: 852, porcentaje: 63 },
+            torres: { actual: 472, total: 852, porcentaje: 55 },
+            kmTendido: { actual: 3, total: 22, porcentaje: 13.6 },
+            spi: 0.81,
+            cpi: 0.87,
+            
+            fopo: "13 / Abr / 26",
+            fepo: "19 / Oct / 27",
+            riesgo: "Riesgo Compensación 0 MUSD",
+            extra: "",
+            hechos: [
+                "MLA4: 29/abr ANLA mediante resolución 001269 notificada a ENLAZA el 04/may resuelve Recurso de Reposició",
+                "MLA2: 14/abr ENLAZA radica ante ANLA Recurso de Reposición.  A la espera de pronunciamiento de la ANLA",
+                "MMLA3: 07/may mediante resolución 001323 ANLA ANLA otorga la modificación de la licencia, en revisión la aplicabilidad de Recurso de Reposición por imposiciones de aprovechamiento forestal.",
+                "20/abr se publica el proceso de contratación para finalizar obras civiles y montaje en Subestaciones Sogamoso y Nueva Esperanza, actualmente se encuentra en sesión de preguntas y respuestas.)",
+                "SE Norte PCA Obras Civiles, Montajes e Ingeniería Secundaria. El 28/abr en comité de contratación extraordinario se aprobó la negociación y adjudicación, actualmente se encuentra en elaboración de minuta",
+                
+            ],
+            hitos: [
+                "Seguimiento al pronunciamiento de ANLA de los recursos de reposición de MLA4 y MLA2",
+                "Radicación del EIA Modificación LA5"
+            ],
+            puntosAtencion: [
+                "Proceso contratación obras S.E Norte",
+                "Riesgo derivado de los Bloqueos por parte de la comunidad y los prestadores de servicio, lo cual merita una solución integral a las deudas dejadas por Ingema en territorio"
+            ],
+            social: [
+                ""
+            ]
+        },
+        RSO: {
+            nombre: "Proyecto RSO",
+            liberacionPredial: { actual: 1067, total: 1077, porcentaje: 98 },
+            cimentaciones: { actual: 687, total: 853, porcentaje: 81 },
+            torres: { actual: 492, total: 853, porcentaje: 81 },
+            kmTendido: { actual: 217, total: 424, porcentaje: 51 },
+            spi: 0.89,
+            cpi: 1.80,
+            
+            fopo: "05 / Abr / 26",
+            fepo: "30 / Mar / 27",
+            riesgo: "Riesgo Compensación 5.88 MUSD",
+            extra: "",
+            hechos: [
+                "Tramo II",
+                "Pendiente energización bahías de líneas,  sujetas a finalización Tramo II (Línea Virginia –Alférez)",
+               
+            ],
+            hitos: [
+                "",
+                ""
+            ],
+            puntosAtencion: [
+                "Posibles consultas previas adicionales: Pendiente pronunciamiento DANCP a 16 visitas de verificación ejecutadas durante 2025 a concejos comunitarios FRENACOL y Yanaconas (Guacarí).",
+                "Necesidad de viabilizar la modificación # 1 de los contratos suscritos con 551005988 JE Jaimes Ingenieros SAS y con 551005955 PAHT Construcciones SAS.",
+                "Seguimiento a la respuesta por parte del MME a la solicitud de modificación de la FPO radicada el 05/feb/2026 consecutivo ENL-000318-2026-S.",
+                "Se reporta un deterioro crítico del orden público en el Valle del Cauca..",
+                
+                
+            ],
+            social: [
+                "",
+                ""
+            ]
+        },
+        Huila: {
+            nombre: "Huila",
+            liberacionPredial: { actual: 5, total: 5, porcentaje: 100 },
+            cimentaciones: { actual: 10, total: 10, porcentaje: 100 },
+            torres: { actual: 8, total: 10, porcentaje: 80 },
+            kmTendido: { actual: 0, total: 6, porcentaje: 0 },
+            spi: 0.76,
+            cpi: 0.57,
+            
+            fopo: "31 / Ago / 26",
+            fepo: "30 / Nov / 26",
+            riesgo: "Riesgo Compensación muy bajo",
+            extra: "",
+            hechos: [
+                "Subestación GIS: Se realizaron los trámites de nacionalización, se inició el transporte a la subestación el 28 de abril",
+                
+            ],
+            hitos: [
+                "Firma de contrato de conexión con Electrohuila​",
+                
+            ],
+            puntosAtencion: [
+                "Desarrollo ingeniería subestaciones ",
+                "Pendiente la respuesta de la UPME frente al alcance de las obras del STR Estructuración plan de trabajo para solicitud de prórroga derivado de las demoras en el proceso de licenciamiento.",
+                
+            ],
+            social: [
+                "Gestión social en curso – relacionamiento con comunidades aledañas"
+            ]
+        }
+    };
 
-// Configuración inicial
-document.getElementById('kpi-total').textContent = proyectos.length;
-const totalAlertas = proyectos.reduce((s, p) => s + p.alertas.length, 0);
-document.getElementById('kpi-alerts').textContent = totalAlertas;
-const conRiesgo = proyectos.filter(p => p.tipo.includes('riesgo')).length;
-document.getElementById('kpi-risk').textContent = conRiesgo;
-const conPendiente = proyectos.filter(p => p.tipo.includes('pendiente')).length;
-document.getElementById('kpi-pending').textContent = conPendiente;
+    let proyectoActual = "Colectora";
 
-// Fecha actual
-const ahora = new Date();
-document.getElementById('date-badge').textContent = ahora.toLocaleDateString('es-CO', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+    function mostrarFecha() {
+        const hoy = new Date();
+        const opciones = { day: 'numeric', month: 'long', year: 'numeric' };
+        document.getElementById('fechaDisplay').innerText = hoy.toLocaleDateString('es-ES', opciones);
+    }
 
-let currentRegion = 'all';
-let currentType = 'all';
-let searchQuery = '';
+    function renderTabs() {
+        const container = document.getElementById('projectTabs');
+        const keys = Object.keys(proyectos);
+        container.innerHTML = keys.map(key => `
+            <button class="tab-btn ${key === proyectoActual ? 'active' : ''}" data-proy="${key}">${proyectos[key].nombre}</button>
+        `).join('');
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                proyectoActual = btn.dataset.proy;
+                renderTabs();
+                renderContenido();
+            });
+        });
+    }
 
-// Renderizado de tarjetas
-function renderCards() {
-  const container = document.getElementById('cards-container');
-  container.innerHTML = '';
-  let filtered = proyectos.filter(p => {
-    if (currentRegion !== 'all' && p.region !== currentRegion) return false;
-    if (currentType !== 'all' && !p.tipo.includes(currentType)) return false;
-    if (searchQuery && !(p.nombre.toLowerCase().includes(searchQuery) || p.alertas.some(a => a.toLowerCase().includes(searchQuery)))) return false;
-    return true;
-  });
-  filtered.forEach((p, idx) => {
-    const preview = p.alertas[0].substring(0, 80) + (p.alertas[0].length > 80 ? '…' : '');
-    const tipoTexto = p.tipo.includes('riesgo') ? '⚠️ Riesgo' : (p.tipo.includes('pendiente') ? '⏰ Pendiente' : '🔄 Seguimiento');
-    const card = document.createElement('div');
-    card.className = 'project-card';
-    card.dataset.region = p.region;
-    card.dataset.tipo = p.tipo.join(' ');
-    card.innerHTML = `
-      <div class="card-header">
-        <div class="card-num">${idx+1}</div>
-        <div style="flex:1">
-          <div class="card-title">${p.nombre}</div>
-          <div class="region-badge">${p.region}</div>
-          <div style="font-size:.7rem; color:var(--text-soft); margin-top:4px">${tipoTexto} · ${p.alertas.length} alerta(s)</div>
-        </div>
-        <div class="card-expand">⌄</div>
-      </div>
-      <div class="card-preview">${preview}</div>
-      <div class="card-body"><ul class="alert-list">${p.alertas.map(a => `<li class="alert-item"><div class="alert-dot"></div><span>${a}</span></li>`).join('')}</ul></div>
-    `;
-    card.addEventListener('click', () => card.classList.toggle('expanded'));
-    container.appendChild(card);
-  });
-  document.getElementById('count-num').textContent = filtered.length;
-}
+    function renderContenido() {
+        const data = proyectos[proyectoActual];
+        const mainDiv = document.getElementById('dynamicContent');
+        if (!data) return;
 
-// Eventos de pestañas
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentRegion = btn.dataset.region;
-    renderCards();
-  });
-});
+        const renderList = (items, icon) => {
+            if (!items || items.length === 0) return '<li><i class="fas fa-info-circle"></i> Sin información disponible</li>';
+            return items.map(item => `<li><i class="${icon}"></i> ${item}</li>`).join('');
+        };
 
-// Filtro de tipo
-document.getElementById('type-filter').addEventListener('change', (e) => {
-  currentType = e.target.value;
-  renderCards();
-});
+        const html = `
+            <div class="indicators-grid">
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-chart-line"></i> Liberación Predial</div>
+                    <div class="pair-values">
+                        <span class="current">${data.liberacionPredial.actual}</span>
+                        <span class="total">de ${data.liberacionPredial.total}</span>
+                    </div>
+                    <div class="percentage">${data.liberacionPredial.porcentaje}%</div>
+                    <div class="progress-bar"><div class="progress-fill" style="width: ${data.liberacionPredial.porcentaje}%;"></div></div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-hard-hat"></i> Cimentaciones</div>
+                    <div class="pair-values">
+                        <span class="current">${data.cimentaciones.actual}</span>
+                        <span class="total">de ${data.cimentaciones.total}</span>
+                    </div>
+                    <div class="percentage">${data.cimentaciones.porcentaje}%</div>
+                    <div class="progress-bar"><div class="progress-fill" style="width: ${data.cimentaciones.porcentaje}%;"></div></div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-tower-broadcast"></i> Torres Montadas</div>
+                    <div class="pair-values">
+                        <span class="current">${data.torres.actual}</span>
+                        <span class="total">de ${data.torres.total}</span>
+                    </div>
+                    <div class="percentage">${data.torres.porcentaje}%</div>
+                    <div class="progress-bar"><div class="progress-fill" style="width: ${data.torres.porcentaje}%;"></div></div>
+                </div>
+                <div class="card">
+                    <div class="card-header"><i class="fas fa-road"></i> Km de Tendido</div>
+                    <div class="pair-values">
+                        <span class="current">${data.kmTendido.actual}</span>
+                        <span class="total">de ${data.kmTendido.total}</span>
+                    </div>
+                    <div class="percentage">${data.kmTendido.porcentaje}%</div>
+                    <div class="progress-bar"><div class="progress-fill" style="width: ${data.kmTendido.porcentaje}%;"></div></div>
+                </div>
+            </div>
 
-// Búsqueda
-document.getElementById('search-input').addEventListener('input', (e) => {
-  searchQuery = e.target.value.toLowerCase().trim();
-  renderCards();
-});
+            <div class="performance-block">
+                <div class="perf-item">
+                    <div class="perf-label"></div>
+                    <div class="perf-value">SPI ${(data.spi * 100).toFixed(0)}%</div>
+                    <div class="small-text">CPI vigencia ${(data.cpi * 100).toFixed(0)}%</div>
+                </div>
+                <div class="perf-item">
+                    <div class="perf-label">${data.riesgo}</div>
+                    <div class="perf-value" style="font-size: 1.2rem;">${data.extra}</div>
+                </div>
+                <div class="perf-item dates">
+                    <div><span class="perf-label">FOPO</span><br><strong>${data.fopo}</strong></div>
+                    <div><span class="perf-label">FEPO</span><br><strong>${data.fepo}</strong></div>
+                </div>
+            </div>
 
-renderCards();
+           
+            <div class="info-sections">
+                <div class="info-card">
+                    <h3><i class="fas fa-newspaper"></i> Hechos relevantes</h3>
+                    <ul class="info-list">${renderList(data.hechos, "fas fa-check-circle")}</ul>
+                </div>
+                <div class="info-card">
+                    <h3><i class="fas fa-calendar-alt"></i> Próximos hitos</h3>
+                    <ul class="info-list">${renderList(data.hitos, "fas fa-flag-checkered")}</ul>
+                </div>
+                <div class="info-card">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Puntos de atención</h3>
+                    <ul class="info-list">${renderList(data.puntosAtencion, "fas fa-bell")}</ul>
+                </div>
+            </div>
+
+            <div class="info-card" style="margin-top: 0;">
+                <h3><i class="fas fa-handshake"></i> Gestión social y comunidades</h3>
+                <ul class="info-list">${renderList(data.social, "fas fa-users")}</ul>
+            </div>
+        `;
+        mainDiv.innerHTML = html;
+    }
+
+    mostrarFecha();
+    renderTabs();
+    renderContenido();
 </script>
 </body>
 </html>
